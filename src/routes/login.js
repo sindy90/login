@@ -1,6 +1,7 @@
 const express = require ('express');
 const router = express.Router();
-const {checkUsername,checkPassword} = require('../utils/userData')
+const {checkUsername,checkPassword,incrementAttempt,resetAttempt,lockUser,maximumAttempt,addToken,invalidateToken} = require('../utils/userData')
+const {createToken} = require('../utils/token')
 
 router.post('/',(req,res)=>{
     const {username,password} = req.body;
@@ -12,10 +13,19 @@ router.post('/',(req,res)=>{
         return res.status(403).json({error :"Account locked due to invalid credentials"})
     }
     if(checkPassword(user,password)){
-            return res.status(200).json({message:'login successful'})
+        resetAttempt(user)
+        const token =createToken(username) 
+        addToken(username,token)
+        return res.status(200).json({message:'login successful',token})
 
     }
     else{
+        const attempts = incrementAttempt(user)
+        if(attempts >= maximumAttempt){
+            lockUser(user);
+            invalidateToken(username)
+            return res.status(403).json({error : "account locked due to invalid credentials"})
+        }
         return res.status(403).json({error:"invalid credentials passed"})
     }
 })

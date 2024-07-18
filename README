@@ -1,0 +1,19 @@
+
+
+In the project directory, you can run:
+
+### `node ./src/index.js`
+
+Runs the app in the development mode.
+
+
+This project contains a  backend code for 
+
+1.login api - Did a basic check without using any db
+2.onetimelink api - generated a token using jsonwebtoken package
+3.time authentication api - checked the current token passed from succesful login and returned current time
+4.kickout api - when login is successful saved the username in object and when called this api if user is present it will send a message as user is kicked out
+
+Handled rate limit using express-rate-limit
+
+
